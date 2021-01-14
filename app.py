@@ -6,6 +6,7 @@ import digestor_pb2
 import digestor_pb2_grpc
 from concurrent import futures
 
+
 class DigestorServicer(digestor_pb2_grpc.DigestorServicer):
     """
     gRPC server for Digestor Service
@@ -28,7 +29,8 @@ class DigestorServicer(digestor_pb2_grpc.DigestorServicer):
         digested = hasher.hexdigest()
 
         # print the output here
-        print('{} -- {} is the digest for received payload of "{}"'.format(str(datetime.datetime.now()),digested, request.ToDigest))
+        print('{} -- {} is the digest for received payload of "{}"'
+              .format(str(datetime.datetime.now()), digested, request.ToDigest))
 
         result = {'Digested': digested, 'WasDigested': True, 'OriginalMessage': request.ToDigest}
 
@@ -44,14 +46,14 @@ class DigestorServicer(digestor_pb2_grpc.DigestorServicer):
         digestor_server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
         # This line can be ignored
-        digestor_pb2_grpc.add_DigestorServicer_to_server(DigestorServicer(),digestor_server)
+        digestor_pb2_grpc.add_DigestorServicer_to_server(DigestorServicer(), digestor_server)
 
         # bind the server to the port defined above
         digestor_server.add_insecure_port('[::]:{}'.format(self.server_port))
 
         # start the server
         digestor_server.start()
-        print ('Digestor Server running ...')
+        print('Digestor Server running ...')
 
         try:
             # need an infinite loop since the above
@@ -62,6 +64,7 @@ class DigestorServicer(digestor_pb2_grpc.DigestorServicer):
         except KeyboardInterrupt:
             digestor_server.stop(0)
             print('Digestor Server Stopped ...')
+
 
 curr_server = DigestorServicer()
 curr_server.start_server()
