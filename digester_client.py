@@ -2,6 +2,7 @@ import grpc
 import digestor_pb2
 import digestor_pb2_grpc
 
+
 class DigestorClient(object):
     """
     Client for accessing the gRPC functionality
@@ -25,5 +26,5 @@ class DigestorClient(object):
         """
         Client function to call the rpc for GetDigest
         """
-        to_digest_message =digestor_pb2.DigestMessage(ToDigest=message)
+        to_digest_message = digestor_pb2.DigestMessage(ToDigest=message)
         return self.stub.GetDigestor(to_digest_message)
