@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-deployment
+  labels:
+    app: grpc-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: grpc-app
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: grpc-app
+        version: v1
+    spec:
+      containers:
+      - name: app
+        image: us.icr.io/jtp1/python-grpc-example:latest
+        ports:
+        - containerPort: 46001
+          name: grpc-web
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-app
+spec:
+  selector:
+    app: grpc-app
+  type: ClusterIP
+  ports:
+  - name: grpc-web # important!
+    port: 46001
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: grpc-app-vs
+spec:
+  gateways:
+  - grpc-app-gw
+  hosts:
+  - "*"
+  http:
+  - route:
+    - destination:
+        host: grpc-app
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: grpc-app-gw
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: grpc
+      protocol: GRPC
+    hosts:
+    - "*"
