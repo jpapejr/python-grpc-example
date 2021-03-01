@@ -1,6 +1,7 @@
 import grpc
 import digestor_pb2
 import digestor_pb2_grpc
+import sys
 
 
 class DigestorClient(object):
@@ -12,8 +13,11 @@ class DigestorClient(object):
         # configure the host and the
         # the port to which the client should connect
         # to.
-        self.host = 'localhost'
-        self.server_port = 46001
+        self.host = sys.argv[1]
+        self.server_port = sys.argv[2]
+
+        # sanity check
+        print("Connecting to " + self.host + " on port " + str(self.server_port) + ".")
 
         # instantiate a communication channel
         self.channel = grpc.insecure_channel(
@@ -28,3 +32,7 @@ class DigestorClient(object):
         """
         to_digest_message = digestor_pb2.DigestMessage(ToDigest=message)
         return self.stub.GetDigestor(to_digest_message)
+
+
+client = DigestorClient()
+print(client.get_digest(sys.argv[3]))
