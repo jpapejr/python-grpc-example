@@ -66,3 +66,19 @@ spec:
       protocol: GRPC
     hosts:
     - "*"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: grpc-app-gw2
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 9090
+      name: grpc
+      protocol: GRPC
+    hosts:
+    - "*"
