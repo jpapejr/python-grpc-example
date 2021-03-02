@@ -44,6 +44,7 @@ metadata:
 spec:
   gateways:
   - grpc-app-gw
+  - grpc-app-gw2
   hosts:
   - "*"
   http:
@@ -82,3 +83,29 @@ spec:
       protocol: GRPC
     hosts:
     - "*"
+---
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: ibm-operators
+  name: custom-ingressgateway-iop
+spec:
+  profile: empty
+  hub: icr.io/ext/istio
+  # tag: 1.8.1 # Force the Gateway to a specific version
+  components:
+    ingressGateways:
+      - name: custom-ingressgateway
+        label: 
+          istio: custom-ingressgateway
+        namespace: custom-gateways
+        enabled: true
+        k8s:
+          serviceAnnotations:
+            service.kubernetes.io/ibm-load-balancer-cloud-provider-ip-type: public # Change to private for a private IP
+          service:
+            ports:
+            - name: myport
+              port: 9090
+              protocol: TCP
+              targetPort: 8080
